@@ -32,7 +32,7 @@ data class QueueRef(
 fun Iterable<QueueRef>.getAllSources(): Iterable<ReceiveChannel<QueueInfo>> {
     val list: MutableList<ReceiveChannel<QueueInfo>> = mutableListOf()
     forEach { list += it.sources }
-    return list
+    return list.distinct()
 }
 
 /**
@@ -40,7 +40,7 @@ fun Iterable<QueueRef>.getAllSources(): Iterable<ReceiveChannel<QueueInfo>> {
  * @return all channels to send to from an Iterable of QueueRef
  */
 fun Iterable<QueueRef>.getAllProcesses(): Iterable<SendChannel<QueueInfo>> {
-    return map { it.process }
+    return map { it.process }.distinct()
 }
 
 /**
