@@ -18,6 +18,7 @@ fun CoroutineScope.runSimulation(
     launch {
         delay(timeout)
         channel.cancel()
+        println("Lunch is over.")
     }
     return channel
 }
