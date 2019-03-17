@@ -14,27 +14,33 @@ import kotlinx.coroutines.channels.produce
 @ExperimentalCoroutinesApi
 fun CoroutineScope.createChannels(): List<QueueRef> {
     //TODO: Mathematical model of the flow of people through lines
+    //assume there is unlimited queuing area and it's always able to send work
     val totalWork = 100
-    val work: ReceiveChannel<QueueInfo> = produce {
+    val work: ReceiveChannel<QueueInfo> = produce(
+        capacity = Channel.UNLIMITED //unlimited queuing area
+    ) {
         repeat(totalWork) {
+            delay(90.ms)
             send(QueueInfo(it))
         }
     }
 
     //initialize channels (stations) to be injected later
-    //TODO: Buffers...?
-    val servingStation = Channel<QueueInfo>()
-    val selfServingStation1 = Channel<QueueInfo>()
-    val selfServingStation2 = Channel<QueueInfo>()
-    val cashier1 = Channel<QueueInfo>()
-    val cashier2 = Channel<QueueInfo>()
+    //unlimited capacity shows the cause of the bottleneck
+    //rendezvous capacity shows where people are stuck
+    val capacity = Channel.UNLIMITED
+    val servingStation = Channel<QueueInfo>(capacity)
+    val selfServingStation1 = Channel<QueueInfo>(capacity)
+    val selfServingStation2 = Channel<QueueInfo>(capacity)
+    val cashier1 = Channel<QueueInfo>(capacity)
+    val cashier2 = Channel<QueueInfo>(capacity)
 
     //creates references between channels (stations)
     //change this to model lunch line
     return listOf(
-        QueueRef(work, servingStation, 300.ms, 1),
-        QueueRef(servingStation, selfServingStation1, 200.ms, 1),
-        QueueRef(servingStation, selfServingStation2, 200.ms, 1),
+        QueueRef(work, servingStation, 100.ms, 1),
+        QueueRef(servingStation, selfServingStation1, 300.ms, 1),
+        QueueRef(servingStation, selfServingStation2, 300.ms, 1),
         QueueRef(selfServingStation1, cashier1, 50.ms, 1),
         QueueRef(selfServingStation2, cashier2, 50.ms, 1)
     )
@@ -47,21 +53,26 @@ fun CoroutineScope.createChannels(): List<QueueRef> {
  * @param queueRef references to sources, process, and process time for each worker
  * @return a background job that contains the asynchronous process of people through the line
  */
+@ExperimentalCoroutinesApi
 fun CoroutineScope.worker(
     queueRef: QueueRef
 ): Job = launch {
     //parent coroutine to receive work from sources
-    queueRef.sources.forEach { receiveChannel ->
-        //child coroutine to process work for each source
-        launch {
-            //this is where the time delay happens
-            //adds checkpoint and sends QueueInfo after delay
-            for (queueInfo in receiveChannel) {
-                delay(queueRef.delay)
-                queueInfo.checkPoint()
-                queueRef.process.send(queueInfo)
+    val merged: ReceiveChannel<QueueInfo> = produce<QueueInfo> {
+        queueRef.sources.forEach { receiveChannel ->
+            //merges work to one channel
+            launch {
+                for (queueInfo in receiveChannel)
+                    this@produce.send(queueInfo)
             }
         }
+    }
+    //this is where the time delay happens
+    //adds checkpoint and sends QueueInfo after delay
+    for (queueInfo in merged) {
+        delay(queueRef.delay)
+        queueInfo.checkPoint()
+        queueRef.process.send(queueInfo)
     }
 }
 
@@ -100,22 +111,30 @@ fun CoroutineScope.processReferences(
  */
 @ExperimentalCoroutinesApi
 fun runLineSimulation(): Unit = runBlocking<Unit> {
+    val totalTimes: MutableList<Long> = mutableListOf()
     try {
         //The chain does not automatically stop because it does not know how many QueueInfo it has to process
         //In reality the timeout should equal the amount of time the lunch line is open for
         withTimeout<Unit>(35.s) {
             val refs: List<QueueRef> = createChannels()
             val results: ReceiveChannel<QueueInfo> = processReferences(refs)
-            for (result in results) """
-                ProcessNumber: ${result.processNumber}
-                Wait times: ${result.waitTimes}
-                Total wait time: ${result.totalWaitTime}
-                """.trimIndent().let(::println)
+            for (result in results) {
+                """
+                    ProcessNumber: ${result.processNumber}
+                    Wait times: ${result.waitTimes}
+                    Total wait time: ${result.totalWaitTime}
+                    """.trimIndent().let(::println)
+                totalTimes += result.totalWaitTime
+            }
         }
     } catch (e: TimeoutCancellationException) {
         //withTimeout() throws a TimeoutCancellationException
         //when that happens we know that lunch is over
-        println("Lunch is over.")
+        """
+
+            Lunch is over.
+            Average wait time: ${totalTimes.average()}
+        """.trimIndent().let(::println)
     }
 }
 

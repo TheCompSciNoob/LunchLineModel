@@ -6,7 +6,7 @@
  * @constructor Create a new QueueInfo with process number and no wait times yet
  */
 data class QueueInfo(val processNumber: Int) {
-    private var baseTime: Long = System.currentTimeMillis()
+    var baseTime: Long = System.currentTimeMillis()
     val waitTimes: MutableList<Long> = mutableListOf()
 
     /**
