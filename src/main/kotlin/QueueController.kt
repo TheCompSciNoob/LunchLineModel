@@ -12,7 +12,7 @@ import kotlinx.coroutines.channels.produce
  * @return List of QueueRef to connect different channels (stations)
  */
 @ExperimentalCoroutinesApi
-fun CoroutineScope.createChannels(): List<QueueRef> {
+private fun CoroutineScope.createChannels(): List<QueueRef> {
     //TODO: Mathematical model of the flow of people through lines
     //assume there is unlimited queuing area and it's always able to send work
     val totalWork = 100
@@ -54,7 +54,7 @@ fun CoroutineScope.createChannels(): List<QueueRef> {
  * @return a background job that contains the asynchronous process of people through the line
  */
 @ExperimentalCoroutinesApi
-fun CoroutineScope.worker(
+private fun CoroutineScope.worker(
     queueRef: QueueRef
 ): Job = launch {
     //parent coroutine to receive work from sources
@@ -86,7 +86,7 @@ fun CoroutineScope.worker(
  */
 @ExperimentalCoroutinesApi
 @Suppress("UNCHECKED_CAST")
-fun CoroutineScope.processReferences(
+private fun CoroutineScope.processReferences(
     refs: List<QueueRef>
 ): ReceiveChannel<QueueInfo> = produce<QueueInfo> {
     //use refs to chain stations
