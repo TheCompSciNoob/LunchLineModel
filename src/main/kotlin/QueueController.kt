@@ -44,9 +44,9 @@ private fun CoroutineScope.processReferences(
     }
     //find exits to receive from and sends them to one ReceiveChannel<QueueInfo>
     //type of List<ReceiveChannel<QueueInfo>>, cast later
-    refs.getAllExits().forEach {
+    refs.getAllExits().forEach { exit ->
         launch {
-            for (queueInfo in it) {
+            for (queueInfo in exit) {
                 //Log for debugging
                 """
                     ProcessNumber: ${queueInfo.processNumber}
