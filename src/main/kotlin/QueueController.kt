@@ -7,6 +7,8 @@ import kotlinx.coroutines.channels.produce
 /**
  * Puts everything together: runs line simulation with timeout
  *
+ * @param refs references between source channels and process channel
+ * @param timeout time allowed to process work, i.e. for how long the line is open
  * @return ReceiveChannel<QueueInfo> that sends processed QueueInfo
  */
 @ExperimentalCoroutinesApi
@@ -32,7 +34,6 @@ fun CoroutineScope.runSimulation(
  * @return ReceiveChannel<QueueInfo> that sends processed QueueInfo
  */
 @ExperimentalCoroutinesApi
-@Suppress("UNCHECKED_CAST")
 private fun CoroutineScope.processReferences(
     refs: List<QueueRef>
 ): ReceiveChannel<QueueInfo> = produce<QueueInfo> {
@@ -43,7 +44,6 @@ private fun CoroutineScope.processReferences(
         }
     }
     //find exits to receive from and sends them to one ReceiveChannel<QueueInfo>
-    //type of List<ReceiveChannel<QueueInfo>>, cast later
     refs.getAllExits().forEach { exit ->
         launch {
             for (queueInfo in exit) {
@@ -63,7 +63,7 @@ private fun CoroutineScope.processReferences(
  * Extension function to create a new worker to process QueueInfo from source channels
  * Receives from all sources, and sends them through the process channel after the delay
  *
- * @param queueRef references to sources, process, and process time for each worker
+ * @param queueRef one reference to sources, process, and process time for each worker
  * @return a background job that contains the asynchronous process of people through the line
  */
 @ExperimentalCoroutinesApi
