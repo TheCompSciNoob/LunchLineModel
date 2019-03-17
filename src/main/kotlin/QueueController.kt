@@ -61,7 +61,6 @@ fun CoroutineScope.worker(
                 queueInfo.checkPoint()
                 queueRef.process.send(queueInfo)
             }
-
         }
     }
 }
