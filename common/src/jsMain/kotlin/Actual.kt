@@ -1,5 +1,5 @@
 import kotlin.js.Date
 
-actual fun currentTimeMillis(): Long {
+actual fun currentTimeMillis(): kotlin.Long {
     return Date.now().toLong()
 }
