@@ -6,14 +6,14 @@
  * @constructor Create a new QueueInfo with process number and no wait times yet
  */
 data class QueueInfo(val processNumber: Int) {
-    var baseTime: Long = System.currentTimeMillis()
+    var baseTime: Long = currentTimeMillis()
     val waitTimes: MutableList<Long> = mutableListOf()
 
     /**
      * Adds time elapsed since base time to record wait time in each station
      */
     fun checkPoint() {
-        val currentTime = System.currentTimeMillis()
+        val currentTime = currentTimeMillis()
         waitTimes += (currentTime - baseTime)
         baseTime = currentTime
     }

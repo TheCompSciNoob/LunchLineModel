@@ -1,2 +1,3 @@
-rootProject.name = 'lunchlinemodel'
+enableFeaturePreview("GRADLE_METADATA")
 
+rootProject.name = 'lunchlinemodel'
