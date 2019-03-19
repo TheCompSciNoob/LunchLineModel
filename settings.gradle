@@ -13,5 +13,5 @@ enableFeaturePreview("GRADLE_METADATA")
 rootProject.name = 'lunchlinemodel'
 
 include ':common'
-include 'jvm'
+include ':jvm'
 
