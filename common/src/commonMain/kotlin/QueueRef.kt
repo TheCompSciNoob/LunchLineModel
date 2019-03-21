@@ -29,7 +29,7 @@ data class QueueRef(
  * @receiver Iterable of QueueRef
  * @return all channels to receive from from an Iterable of QueueRef
  */
-fun Iterable<QueueRef>.getAllSources(): Iterable<ReceiveChannel<QueueInfo>> {
+fun Iterable<QueueRef>.getAllSources(): List<ReceiveChannel<QueueInfo>> {
     val list: MutableList<ReceiveChannel<QueueInfo>> = mutableListOf()
     forEach { list += it.sources }
     return list.distinct()
@@ -39,7 +39,7 @@ fun Iterable<QueueRef>.getAllSources(): Iterable<ReceiveChannel<QueueInfo>> {
  * @receiver Iterable of QueueRef
  * @return all channels to send to from an Iterable of QueueRef
  */
-fun Iterable<QueueRef>.getAllProcesses(): Iterable<SendChannel<QueueInfo>> {
+fun Iterable<QueueRef>.getAllProcesses(): List<SendChannel<QueueInfo>> {
     return map { it.process }.distinct()
 }
 
@@ -49,9 +49,9 @@ fun Iterable<QueueRef>.getAllProcesses(): Iterable<SendChannel<QueueInfo>> {
  * @return channels that are not received by any channel, i.e. exits
  */
 @Suppress("UNCHECKED_CAST")
-fun Iterable<QueueRef>.getAllExits(): Iterable<ReceiveChannel<QueueInfo>> = try {
+fun Iterable<QueueRef>.getAllExits(): List<ReceiveChannel<QueueInfo>> = try {
     val exits = getAllProcesses() - getAllSources()
-    exits as Iterable<ReceiveChannel<QueueInfo>>
+    exits as List<ReceiveChannel<QueueInfo>>
 } catch (e: ClassCastException) {
     throw ClassCastException("Not all exits are ReceiveChannel<QueueInfo>.")
 }
