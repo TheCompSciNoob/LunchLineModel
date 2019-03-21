@@ -27,9 +27,11 @@ kotlin {
         }
         js().compilations["main"].run {
             kotlinOptions {
-                moduleKind = "commonjs"
+                metaInfo = true
                 sourceMap = true
-                sourceMapEmbedSources = "always"
+                verbose = true
+                main = "call"
+                moduleKind = "umd"
             }
             defaultSourceSet {
                 dependencies {
