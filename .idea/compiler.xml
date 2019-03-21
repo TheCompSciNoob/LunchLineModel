@@ -6,6 +6,8 @@
       <module name="com.example.kyros.jvm.test" target="1.8" />
       <module name="com.example.kyros.lunchlinemodel.jvmMain" target="1.8" />
       <module name="com.example.kyros.lunchlinemodel.jvmTest" target="1.8" />
+      <module name="com.example.kyros.web.main" target="1.8" />
+      <module name="com.example.kyros.web.test" target="1.8" />
       <module name="lunchlinemodel.common.jvmMain" target="1.8" />
       <module name="lunchlinemodel.common.jvmTest" target="1.8" />
     </bytecodeTargetLevel>

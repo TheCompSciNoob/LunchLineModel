@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.21"
+        classpath "org.jetbrains.kotlin:kotlin-frontend-plugin:0.0.45"
+    }
+}
+
+group = "com.example.kyros"
+version = "1.0-SNAPSHOT"
+
+apply plugin: "kotlin2js"
+apply plugin: "org.jetbrains.kotlin.frontend"
+apply plugin: 'kotlin-dce-js'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js:1.3.21"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.1.1"
+    compile project(":common")
+    testCompile "org.jetbrains.kotlin:kotlin-test-js:1.3.21"
+}
+
+kotlinFrontend {
+    downloadNodeJsVersion = "latest"
+
+    npm {
+        //frontend plugin settings
+        dependency "style-loader"
+        devDependency "karma"
+        dependency "kotlinx-coroutines-core"
+    }
+    webpackBundle {
+        bundleName = "main"
+        contentPath = file("src/main/web")
+        mode = "production"
+        publicPath = "/"  // web prefix
+        host = "localhost" // dev server host
+        port = 8088   // dev server port
+    }
+}
+
+compileKotlin2Js {
+    kotlinOptions.metaInfo = true
+    kotlinOptions.outputFile = "$project.buildDir.path/js/${project.name}.js"
+    kotlinOptions.sourceMap = true
+    kotlinOptions.moduleKind = 'commonjs'
+    kotlinOptions.main = "call"
+}
+
+compileTestKotlin2Js {
+    kotlinOptions.metaInfo = true
+    kotlinOptions.outputFile = "$project.buildDir.path/js-tests/${project.name}-tests.js"
+    kotlinOptions.sourceMap = true
+    kotlinOptions.moduleKind = 'commonjs'
+//    kotlinOptions.moduleName = project.name + "-test"
+    kotlinOptions.main = "call"
+}

@@ -28,10 +28,11 @@ kotlin {
         js().compilations["main"].run {
             kotlinOptions {
                 metaInfo = true
-                sourceMap = true
+                sourceMap = false
                 verbose = true
                 main = "call"
                 moduleKind = "umd"
+                sourceMapEmbedSources = "always"
             }
             defaultSourceSet {
                 dependencies {
