@@ -24,7 +24,8 @@ fun Application.loadIndex(): HTMLDivElement {
             val results: MutableList<QueueInfo> = mutableListOf()
             val resultsChannel: ReceiveChannel<QueueInfo> = runSimulation(
                 refs = createSampleRefs(),
-                timeout = 20.s
+                timeout = 20.s,
+                logging = false
             )
             for (queueInfo in resultsChannel) {
                 div.textContent = """

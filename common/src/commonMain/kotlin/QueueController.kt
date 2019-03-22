@@ -15,9 +15,10 @@ import kotlinx.coroutines.channels.produce
 @ExperimentalCoroutinesApi
 fun CoroutineScope.runSimulation(
     refs: List<QueueRef>,
-    timeout: Long
+    timeout: Long,
+    logging: Boolean = true
 ): ReceiveChannel<QueueInfo> {
-    val channel = processReferences(refs)
+    val channel = processReferences(refs, logging)
     launch {
         delay(timeout)
         channel.cancel()
@@ -36,7 +37,8 @@ fun CoroutineScope.runSimulation(
  */
 @ExperimentalCoroutinesApi
 private fun CoroutineScope.processReferences(
-    refs: List<QueueRef>
+    refs: List<QueueRef>,
+    logging: Boolean = true
 ): ReceiveChannel<QueueInfo> = produce<QueueInfo>(
     capacity = Channel.UNLIMITED //unlimited because it's the final exit
 ) {
@@ -51,7 +53,7 @@ private fun CoroutineScope.processReferences(
         launch {
             for (queueInfo in exit) {
                 //Log for debugging
-                """
+                if (logging) """
                     ProcessNumber: ${queueInfo.processNumber}
                     Wait times: ${queueInfo.waitTimes}
                     Total wait time: ${queueInfo.totalWaitTime}
