@@ -3,8 +3,13 @@ import kotlin.browser.document
 
 @ExperimentalCoroutinesApi
 fun main() {
-    val application = Application()
+    val app = Application()
     document.addEventListener("DOMContentLoaded", {
-        application.start()
+        println("Starting KotlinJS application.")
+        app.start()
+    })
+    document.addEventListener("unload", {
+        println("Finishing KotlinJS application.")
+        app.finish()
     })
 }
