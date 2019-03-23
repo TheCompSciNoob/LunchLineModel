@@ -1,5 +1,4 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import kotlinx.html.*
@@ -14,18 +13,20 @@ fun Application.loadIndex(): HTMLDivElement {
     val div: HTMLDivElement by lazy {
         document.getElementById("simulation output") as HTMLDivElement
     }
-    //function to run simulation with coroutines
-    var simulationJob: Job? = null
+
+    fun onSimulationStop() {
+        qc.clear()
+        div.textContent = ""
+    }
+
     fun onSimulationStart() {
-        simulationJob = launch {
-            //clear output
+        onSimulationStop()
+        qc.launch {
             div.textContent = ""
-            //run new simulation
             val results: MutableList<QueueInfo> = mutableListOf()
-            val resultsChannel: ReceiveChannel<QueueInfo> = runSimulation(
-                refs = createSampleRefs(),
-                timeout = 20.s,
-                logging = false
+            val resultsChannel: ReceiveChannel<QueueInfo> = qc.runSimulation(
+                refs = qc.createSampleRefs(),
+                timeout = 20.s
             )
             for (queueInfo in resultsChannel) {
                 div.textContent = """
@@ -42,11 +43,6 @@ fun Application.loadIndex(): HTMLDivElement {
 
             """.trimIndent() + div.textContent
         }
-    }
-
-    fun onSimulationStop() {
-        simulationJob?.cancel()
-        div.textContent = ""
     }
 
     //UI

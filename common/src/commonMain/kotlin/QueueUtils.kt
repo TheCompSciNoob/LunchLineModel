@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
  * @return List of QueueRef to connect different channels (stations)
  */
 @ExperimentalCoroutinesApi
-fun CoroutineScope.createSampleRefs(): List<QueueRef> {
+fun QueueController.createSampleRefs(): List<QueueRef> {
     //TODO: Mathematical model of the flow of people through lines
     //assume there is unlimited queuing area and it's always able to send work
     val totalWork = 100

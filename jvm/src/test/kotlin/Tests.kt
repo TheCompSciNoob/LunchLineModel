@@ -9,8 +9,9 @@ class Tests {
     @Test
     @ExperimentalCoroutinesApi
     fun testWithSampleRefs(): Unit = runBlocking<Unit> {
-        val results: List<QueueInfo> = runSimulation(
-            refs = createSampleRefs(),
+        val qc = QueueController(coroutineContext)
+        val results: List<QueueInfo> = qc.runSimulation(
+            refs = qc.createSampleRefs(),
             timeout = 20.s
         ).awaitAll()
         val averageTime = results.map { it.totalWaitTime }.average()
