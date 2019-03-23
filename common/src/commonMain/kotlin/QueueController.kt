@@ -5,6 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlin.coroutines.CoroutineContext
+import kotlin.jvm.JvmOverloads
 
 /**
  * Used with applications with a lifecycle to make running simulations easier
@@ -30,6 +31,7 @@ class QueueController : CoroutineScope {
         timeout: Long,
         logging: Boolean = true
     ): ReceiveChannel<QueueInfo> {
+        //clear()
         val channel = processReferences(refs, logging)
         launch {
             delay(timeout)
@@ -111,7 +113,8 @@ class QueueController : CoroutineScope {
      * Clears all QueueInfo currently in the pipeline
      */
     fun clear() {
-        coroutineContext.cancelChildren()
+        job.cancelChildren()
+        job = Job()
     }
 }
 

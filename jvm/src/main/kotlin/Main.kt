@@ -17,5 +17,5 @@ fun main(): Unit = runBlocking<Unit> {
     qc.runSimulation(
         refs = qc.createSampleRefs(),
         timeout = 3.s
-    )
+    ).awaitAll()
 }

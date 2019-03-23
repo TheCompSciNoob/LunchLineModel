@@ -1,3 +1,4 @@
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
@@ -15,6 +16,7 @@ object Application {
     }
 
     //HTML builder, load UI
+    @ExperimentalCoroutinesApi
     fun start() {
         document.body!!.append.div {
             h1 {
