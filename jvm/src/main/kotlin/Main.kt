@@ -1,21 +1,17 @@
 @file:Suppress("RemoveExplicitTypeArguments")
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 @ExperimentalCoroutinesApi
 fun main(): Unit = runBlocking<Unit> {
     val qc = QueueController()
-    qc.runSimulation(
-        refs = qc.createSampleRefs(),
-        timeout = 20.s
-    )
-    delay(2.s)
-    qc.clear()
-    println("Cleared.")
-    qc.runSimulation(
-        refs = qc.createSampleRefs(),
-        timeout = 3.s
+    val results: List<QueueInfo> = qc.runSimulation(
+        refs = qc.createSampleRefs(), //references between stations
+        timeout = 20.s,
+        logging = true
     ).awaitAll()
+    //prints out stats after simulation is complete
+    val averageTime = results.map { it.totalWaitTime }.average()
+    println("\nAverage wait time: $averageTime")
 }
