@@ -1,0 +1,1 @@
+expect fun currentTimeMillis(): kotlin.Long
