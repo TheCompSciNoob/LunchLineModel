@@ -9,8 +9,8 @@ import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document
 
 object Application {
-    val qc = QueueController()
-    val div: HTMLDivElement by lazy {
+    private val qc = QueueController()
+    private val div: HTMLDivElement by lazy {
         document.getElementById("simulation output") as HTMLDivElement
     }
 
