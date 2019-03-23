@@ -4,11 +4,11 @@ import kotlin.browser.document
 @ExperimentalCoroutinesApi
 fun main() {
     //app lifecycle listeners
-    val app = Application()
+    val qc = QueueController()
     document.addEventListener("DOMContentLoaded", {
-        app.start()
+        document.start(qc)
     })
     document.addEventListener("unload", {
-        app.finish()
+        qc.clear()
     })
 }

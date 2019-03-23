@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 
 @ExperimentalCoroutinesApi
 fun main(): Unit = runBlocking<Unit> {
-    val qc = QueueController(coroutineContext)
+    val qc = QueueController()
     qc.runSimulation(
         refs = qc.createSampleRefs(),
         timeout = 20.s

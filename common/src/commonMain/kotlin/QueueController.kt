@@ -5,20 +5,17 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Used with applications with a lifecycle to make running simulations easier
+ * Must manually handle lifecycle of QueueController
  *
- * @property parentContext to follow the lifecycle of the parent; default: manage lifecycle manually
  * @constructor creates a QueueController that is able to repeatedly run simulations
  */
-class QueueController(
-    private val parentContext: CoroutineContext = EmptyCoroutineContext
-) : CoroutineScope {
+class QueueController : CoroutineScope {
     private var job = Job()
     override val coroutineContext: CoroutineContext
-        get() = job + parentContext
+        get() = job
 
     /**
      * Puts everything together: runs line simulation with timeout

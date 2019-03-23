@@ -5,11 +5,14 @@ import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
+import org.w3c.dom.Document
 import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document
 
 @ExperimentalCoroutinesApi
-fun Application.loadIndex(): HTMLDivElement {
+fun Document.start(
+    qc: QueueController
+): HTMLDivElement {
     val div: HTMLDivElement by lazy {
         document.getElementById("simulation output") as HTMLDivElement
     }
@@ -46,7 +49,7 @@ fun Application.loadIndex(): HTMLDivElement {
     }
 
     //UI
-    return document.body!!.append.div {
+    return body!!.append.div {
         h1 {
             +"Lunch Line Simulation with Kotlin Coroutines"
             style = "font-family:Verdana"
