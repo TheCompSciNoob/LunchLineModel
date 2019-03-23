@@ -30,12 +30,11 @@ class QueueController : CoroutineScope {
         timeout: Long,
         logging: Boolean = true
     ): ReceiveChannel<QueueInfo> {
-        //clear()
         val channel = processReferences(refs, logging)
         launch {
             delay(timeout)
             channel.cancel()
-            println("Lunch is over.")
+            if (logging) println("Lunch is over.")
         }
         return channel
     }

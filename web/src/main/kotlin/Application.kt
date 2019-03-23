@@ -45,9 +45,9 @@ object Application {
     }
 
     @ExperimentalCoroutinesApi
-    private fun onSimulationStart() {
-        onSimulationStop()
-        qc.launch {
+    private fun onSimulationStart(): Unit = with(qc) {
+        clear()
+        launch {
             div.textContent = ""
             val results: MutableList<QueueInfo> = mutableListOf()
             val resultsChannel: ReceiveChannel<QueueInfo> = qc.runSimulation(
