@@ -3,7 +3,7 @@
 import kotlinx.coroutines.*
 import org.junit.Test
 
-class Tests {
+class SimulationTests {
 
     @Test
     @ExperimentalCoroutinesApi
