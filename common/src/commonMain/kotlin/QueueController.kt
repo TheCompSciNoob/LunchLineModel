@@ -5,17 +5,19 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * Used with applications with a lifecycle to make running simulations easier
- * Must manually handle lifecycle of QueueController
+ * Used with applications with a to make running simulations easier
+ * Must manually handle lifecycle of QueueController if no parentContext is passed
  *
+ * @param parentContext context to follow lifecycle of application
  * @constructor creates a QueueController that is able to repeatedly run simulations
  */
-class QueueController : CoroutineScope {
-    private var job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = job
+class QueueController(
+    parentContext: CoroutineContext = EmptyCoroutineContext
+) : CoroutineScope {
+    override val coroutineContext: CoroutineContext = parentContext + Job()
 
     /**
      * Puts everything together: runs line simulation with timeout
@@ -49,7 +51,7 @@ class QueueController : CoroutineScope {
      * @return ReceiveChannel<QueueInfo> that sends processed QueueInfo
      */
     @ExperimentalCoroutinesApi
-    private fun processReferences(
+    private fun CoroutineScope.processReferences(
         refs: List<QueueRef>,
         logging: Boolean
     ): ReceiveChannel<QueueInfo> = produce<QueueInfo>(
@@ -85,7 +87,7 @@ class QueueController : CoroutineScope {
      * @return a background job that contains the asynchronous process of people through the line
      */
     @ExperimentalCoroutinesApi
-    private fun worker(
+    private fun CoroutineScope.worker(
         queueRef: QueueRef
     ): Job = launch {
         //parent coroutine to receive work from sources
@@ -111,8 +113,7 @@ class QueueController : CoroutineScope {
      * Clears all QueueInfo currently in the pipeline
      */
     fun clear() {
-        job.cancelChildren()
-        job = Job()
+        coroutineContext.cancelChildren()
     }
 }
 

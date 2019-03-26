@@ -7,8 +7,8 @@ class SimulationTests {
 
     @Test
     @ExperimentalCoroutinesApi
-    fun runSampleRefsNoTimeout(): Unit = runBlocking<Unit> {
-        val qc = QueueController()
+    fun `Run sample 20s timeout`(): Unit = runBlocking<Unit> {
+        val qc = QueueController(coroutineContext)
         val results: List<QueueInfo> = qc.runSimulation(
             refs = qc.createSampleRefs(),
             timeout = 20.s,
@@ -20,8 +20,8 @@ class SimulationTests {
 
     @Test
     @ExperimentalCoroutinesApi
-    fun runSampleRefsTimeout(): Unit = runBlocking<Unit> {
-        val qc = QueueController()
+    fun `Run sample 5s timeout`(): Unit = runBlocking<Unit> {
+        val qc = QueueController(coroutineContext)
         val results: List<QueueInfo> = qc.runSimulation(
             refs = qc.createSampleRefs(),
             timeout = 5.s,
@@ -33,8 +33,8 @@ class SimulationTests {
 
     @Test
     @ExperimentalCoroutinesApi
-    fun cancelAndRestartSimulation(): Unit = runBlocking<Unit> {
-        val qc = QueueController()
+    fun `Cancel and restart simulation 10s`(): Unit = runBlocking<Unit> {
+        val qc = QueueController(coroutineContext)
         qc.runSimulation(
             refs = qc.createSampleRefs(),
             timeout = 20.s,
@@ -47,6 +47,6 @@ class SimulationTests {
             refs = qc.createSampleRefs(),
             timeout = 5.s,
             logging = true
-        ).awaitAll()
+        )
     }
 }

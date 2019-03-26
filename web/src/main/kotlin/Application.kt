@@ -1,15 +1,17 @@
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.append
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document
+import kotlin.coroutines.CoroutineContext
 
-object Application {
-    private val qc = QueueController()
+object Application : CoroutineScope {
+    override val coroutineContext: CoroutineContext = Job()
+    private val qc = QueueController(coroutineContext)
+    //root div
     private val div: HTMLDivElement by lazy {
         document.getElementById("simulation output") as HTMLDivElement
     }
@@ -40,15 +42,14 @@ object Application {
     }
 
     private fun onSimulationStop() {
-        qc.clear()
+        coroutineContext.cancelChildren()
         div.textContent = ""
     }
 
     @ExperimentalCoroutinesApi
-    private fun onSimulationStart(): Unit = with(qc) {
-        clear()
+    private fun onSimulationStart() {
+        onSimulationStop()
         launch {
-            div.textContent = ""
             val results: MutableList<QueueInfo> = mutableListOf()
             val resultsChannel: ReceiveChannel<QueueInfo> = qc.runSimulation(
                 refs = qc.createSampleRefs(),
@@ -73,6 +74,6 @@ object Application {
     }
 
     fun finish() {
-        qc.clear()
+        coroutineContext.cancel()
     }
 }
